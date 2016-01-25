@@ -1,0 +1,8 @@
+*.class
+.idea/
+.gradle/
+settings.gradle
+gradle/
+gradlew
+gradlew.bat
+gralidation.iml
