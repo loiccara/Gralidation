@@ -5,30 +5,44 @@ package org.cara.utils.gralidation
  */
 class Gralidator {
 
-    static def gralidate(Object object){
-        // get constraints then process all constraints
+    static Set is
 
-        println object.properties
+    static def initGralidator(){
+        Object.metaClass.gralidate = {
+            return gralidate(delegate)
+        }
+        Object.metaClass.errors = []
+    }
+
+    static def gralidate(Object object){
+        boolean result = true
+        List<String> issues = []
+
         Map objectConstraints = object.constraints
 
         if (objectConstraints == null){
-            throw new Exception()
+            throw new MissingPropertyException("No constraints specified for ${object.class}")
         }
 
-        object.properties.each {
-            println it
-
-        }
-/*
         objectConstraints.each {
-            // read the property
             String propertyName = it.key
+            def propertyValue = object.getProperties().get(propertyName)
+
             Map propertyConstraints = it.value
-            object.getProperties().get(propertyName)
-            // check all constraints for this property
+            propertyConstraints.each {
+                def constraint = it.key.toUpperCase()
+                def controlValue = it.value
 
+                GralidationEnum currentControl = constraint as GralidationEnum
+                if (!currentControl.control.call(propertyValue, controlValue)){
+                    issues.add(currentControl.errorCode)
+                }
+            }
         }
-        */
-    }
 
+        result=issues.size()==0
+        object.errors = issues
+
+        return result
+    }
 }

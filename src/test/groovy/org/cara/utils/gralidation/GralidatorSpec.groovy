@@ -17,6 +17,7 @@ class GralidatorSpec extends Specification {
         List dummyList
 
         static def constraints = [:]
+        List errors
     }
 
     class DummyObjectWithConstraints{
@@ -24,7 +25,10 @@ class GralidatorSpec extends Specification {
         List dummyList
 
         static def constraints = [
-                name:[nullable:false]]
+            name:[nullable:false],
+            dummyList:[maxlength:5, minlength:3]
+        ]
+        List errors
     }
 
     def "a gralidation without constraints throws an exception"(){
@@ -35,7 +39,7 @@ class GralidatorSpec extends Specification {
         Gralidator.gralidate(foo1)
 
         then:
-        thrown(Exception)
+        thrown(MissingPropertyException)
     }
 
     def "a gralidation with empty constraints returns true"(){
@@ -48,9 +52,39 @@ class GralidatorSpec extends Specification {
 
     def "a gralidation with constraints checks all the values for each property"(){
         given:
-        DummyObjectWithConstraints foo1 = new DummyObjectWithConstraints()
+        DummyObjectWithConstraints foo1 = new DummyObjectWithConstraints(name:"test", dummyList: [1,2,3,4])
 
         expect:
         Gralidator.gralidate(foo1)
+    }
+
+    def "Gralidator adds a new method to Object on init"(){
+        given:""
+        Object object1 = new Object()
+
+        when:"trying to gralidate before init method"
+        object1.gralidate()
+
+        then:"the gralidate method is missing"
+        thrown(MissingMethodException)
+
+        when:"Init is done"
+        Gralidator.initGralidator()
+
+        and:"a gralidation is done on an object without constraints"
+        Object object2 = new Object()
+        object2.gralidate()
+
+        then:"the constraints property is missing"
+        thrown(MissingPropertyException)
+
+        when:"a gralidation is done on an object with constraints"
+        DummyObjectWithConstraints objectWithConstraints = new DummyObjectWithConstraints()
+        objectWithConstraints.gralidate()
+
+        then:""
+
+
+
     }
 }

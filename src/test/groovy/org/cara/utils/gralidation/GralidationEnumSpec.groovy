@@ -7,7 +7,7 @@ import static org.cara.utils.gralidation.GralidationEnum.*
 class GralidationEnumSpec extends Specification {
 
     def "nullable is checked"() {
-        given: "a dummy object"
+        given:
         DummyObject foo1 = new DummyObject(name: null, aDummyList: null)
         DummyObject foo2 = new DummyObject(name: "dummyName", aDummyList: null)
 
@@ -38,6 +38,18 @@ class GralidationEnumSpec extends Specification {
         !MINLENGTH.control.call(foo1.aDummyList, 1)
         MINLENGTH.control.call(foo2.aDummyList, 2)
         !MINLENGTH.control.call(foo2.aDummyList, 3)
+    }
+
+    def "blank is checked"(){
+        given:
+        DummyObject foo1 = new DummyObject(name: "", aDummyList: [])
+        DummyObject foo2 = new DummyObject(name: "dummyName", aDummyList: [])
+
+        expect:
+        BLANK.control.call(foo1.name, true)
+        !BLANK.control.call(foo1.name, false)
+        BLANK.control.call(foo2.name, true)
+        BLANK.control.call(foo2.name, false)
     }
 
     class DummyObject{
