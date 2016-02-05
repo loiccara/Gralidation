@@ -3,7 +3,6 @@ package org.cara.utils.gralidation
 import spock.lang.Specification
 import static org.cara.utils.gralidation.GralidationEnum.*
 
-
 class GralidationEnumSpec extends Specification {
 
     def "nullable is checked"() {

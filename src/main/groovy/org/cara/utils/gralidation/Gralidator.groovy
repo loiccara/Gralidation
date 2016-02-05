@@ -1,8 +1,5 @@
 package org.cara.utils.gralidation
 
-/**
- * Created by loic on 24/01/2016.
- */
 class Gralidator {
 
     static Set is

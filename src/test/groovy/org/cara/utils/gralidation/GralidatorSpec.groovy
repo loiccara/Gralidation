@@ -2,9 +2,6 @@ package org.cara.utils.gralidation
 
 import spock.lang.Specification
 
-/**
- * Created by loic on 24/01/2016.
- */
 class GralidatorSpec extends Specification {
 
     class DummyObjectWithoutConstraints{
