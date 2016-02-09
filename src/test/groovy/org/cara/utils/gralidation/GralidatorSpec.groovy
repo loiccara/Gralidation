@@ -4,6 +4,8 @@ import spock.lang.Specification
 
 class GralidatorSpec extends Specification {
 
+
+    /************************* OBJECTS VALIDATION *************************/
     class DummyObjectWithoutConstraints{
         String name
         List dummyList
@@ -14,7 +16,6 @@ class GralidatorSpec extends Specification {
         List dummyList
 
         static def constraints = [:]
-        List errors
     }
 
     class DummyObjectWithConstraints{
@@ -23,9 +24,8 @@ class GralidatorSpec extends Specification {
 
         static def constraints = [
             name:[nullable:false],
-            dummyList:[maxlength:5, minlength:3]
+            dummyList:[maxsize:5, minsize:3]
         ]
-        List errors
     }
 
     def "a gralidation without constraints throws an exception"(){
@@ -77,11 +77,74 @@ class GralidatorSpec extends Specification {
 
         when:"a gralidation is done on an object with constraints"
         DummyObjectWithConstraints objectWithConstraints = new DummyObjectWithConstraints()
-        objectWithConstraints.gralidate()
+        GralidationResult gralidationResult = objectWithConstraints.gralidate()
 
-        then:""
-
-
-
+        then:"the gralidation is executed"
+        !gralidationResult.isValid
+        gralidationResult.errors.size()==2
     }
+
+    /************************* MAPS VALIDATION **************************/
+
+    def "should validate even if both collections are null"(){
+        given:
+        Map myMap
+        Map constraints
+
+        when:
+        GralidationResult gralidationResult = Gralidator.gralidate(myMap, constraints, true)
+
+        then:
+        gralidationResult.isValid
+    }
+
+    def "should tell when a property doesn't exist"(){
+        given:
+        Map myMap
+        Map constraints = [batmanData:[nullable:false]]
+
+        when:
+        GralidationResult gralidationResult = Gralidator.gralidate(myMap, constraints, true)
+
+        then:
+        !gralidationResult.isValid
+        gralidationResult.errors.size() == 1
+        gralidationResult.errors[0].contains("inexistantProperty")
+    }
+
+    def "should allow inexistant properties"(){
+        given:
+        Map myMap
+        Map constraints = [batmanData:[nullable:false]]
+
+        when:
+        GralidationResult gralidationResult = Gralidator.gralidate(myMap, constraints, false)
+
+        then:
+        gralidationResult.isValid
+    }
+
+    def "should gralidate successfully a Map when both collections are correct"(){
+        given:
+        Map validDataMap = ["superman":"I can fly and destroy BATMAN", "batman":"DO YOU BLEED?", "aquaman":null]
+        Map invalidDataMap = ["superman":"I can fly and destroy BATMAN", "batman":null, "aquaman":"HEY! I exist and I'm cool!"]
+
+        Map constraints = [batman:[nullable:false], aquaman:[nullable:true]]
+
+        when:
+        GralidationResult validGralidationResult = Gralidator.gralidate(validDataMap, constraints, true)
+
+        then:
+        validGralidationResult.isValid
+
+        when:
+        GralidationResult invalidGralidationResult = Gralidator.gralidate(invalidDataMap, constraints, true)
+
+        then:
+        !invalidGralidationResult.isValid
+        invalidGralidationResult.errors.size() == 1
+    }
+
+    /************************* LISTS VALIDATION **************************/
+
 }

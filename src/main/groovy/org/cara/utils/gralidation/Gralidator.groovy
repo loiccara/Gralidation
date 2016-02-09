@@ -2,44 +2,52 @@ package org.cara.utils.gralidation
 
 class Gralidator {
 
-    static Set is
+    static final String ERROR_CODE_PREFIX = "gralidation.error."
 
     static def initGralidator(){
         Object.metaClass.gralidate = {
             return gralidate(delegate)
         }
-        Object.metaClass.errors = []
     }
 
-    static def gralidate(Object object){
-        boolean result = true
-        List<String> issues = []
-
+    static GralidationResult gralidate(Object object){
+        List<String> errors = []
         Map objectConstraints = object.constraints
 
         if (objectConstraints == null){
             throw new MissingPropertyException("No constraints specified for ${object.class}")
         }
 
-        objectConstraints.each {
-            String propertyName = it.key
+        objectConstraints.each { String propertyName, Map controls ->
             def propertyValue = object.getProperties().get(propertyName)
-
-            Map propertyConstraints = it.value
-            propertyConstraints.each {
-                def constraint = it.key.toUpperCase()
-                def controlValue = it.value
-
-                GralidationEnum currentControl = constraint as GralidationEnum
+            controls.each { String constraint, def controlValue ->
+                GralidationEnum currentControl = constraint.toUpperCase() as GralidationEnum
                 if (!currentControl.control.call(propertyValue, controlValue)){
-                    issues.add(currentControl.errorCode)
+                    errors.add(currentControl.errorCode)
                 }
             }
         }
 
-        result=issues.size()==0
-        object.errors = issues
+        boolean isValid=errors.size()==0
+        new GralidationResult(isValid: isValid, errors:errors)
+    }
 
-        return result
+    static GralidationResult gralidate(Map myMap, Map constraints, boolean validateInexistantKeys){
+        List<String> errors = []
+        constraints.each { String propertyName, Map controls ->
+            if (myMap?.containsKey(propertyName)){
+                def propertyValue = myMap.get(propertyName)
+                controls.each { String constraint, def controlValue ->
+                    GralidationEnum currentControl = constraint.toUpperCase() as GralidationEnum
+                    if (!currentControl.control.call(propertyValue, controlValue)) {
+                        errors.add(ERROR_CODE_PREFIX + currentControl.errorCode)
+                    }
+                }
+            } else if(validateInexistantKeys) {
+                errors.add(ERROR_CODE_PREFIX + "inexistantProperty:" + propertyName)
+            }
+        }
+        boolean isValid=errors.size()==0
+        new GralidationResult(isValid: isValid, errors:errors)
     }
 }

@@ -1,6 +1,7 @@
 package org.cara.utils.gralidation
 
 import spock.lang.Specification
+
 import static org.cara.utils.gralidation.GralidationEnum.*
 
 class GralidationEnumSpec extends Specification {
@@ -23,9 +24,9 @@ class GralidationEnumSpec extends Specification {
         DummyObject foo2 = new DummyObject(name: "dummyName", aDummyList: [1,2])
 
         expect:
-        MAXLENGTH.control.call(foo1.aDummyList, 1)
-        MAXLENGTH.control.call(foo2.aDummyList, 2)
-        !MAXLENGTH.control.call(foo2.aDummyList, 1)
+        MAXSIZE.control.call(foo1.aDummyList, 1)
+        MAXSIZE.control.call(foo2.aDummyList, 2)
+        !MAXSIZE.control.call(foo2.aDummyList, 1)
     }
 
     def "minlength is checked"(){
@@ -34,9 +35,9 @@ class GralidationEnumSpec extends Specification {
         DummyObject foo2 = new DummyObject(name: "dummyName", aDummyList: [1,2])
 
         expect:
-        !MINLENGTH.control.call(foo1.aDummyList, 1)
-        MINLENGTH.control.call(foo2.aDummyList, 2)
-        !MINLENGTH.control.call(foo2.aDummyList, 3)
+        !MINSIZE.control.call(foo1.aDummyList, 1)
+        MINSIZE.control.call(foo2.aDummyList, 2)
+        !MINSIZE.control.call(foo2.aDummyList, 3)
     }
 
     def "blank is checked"(){

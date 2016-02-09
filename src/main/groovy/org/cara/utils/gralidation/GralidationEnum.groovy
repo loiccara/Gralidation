@@ -1,22 +1,49 @@
 package org.cara.utils.gralidation
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException
+
 enum GralidationEnum {
-    NULLABLE("nullable","gralidation.error.nullable",{def parameterToControl, boolean isNullable ->
-        return isNullable || (!isNullable && parameterToControl!=null)
+
+    BLANK("blank", "blank", {def parameterToControl, boolean isBlankable ->
+        isBlankable || (!isBlankable && parameterToControl!="")
     }),
-    MAXLENGTH("maxlength","gralidation.error.maxlength",{def parameterToControl, int maxlength ->
-        return parameterToControl?.size()<=maxlength
+    EMAIL("email", "email", {def parameterToControl, boolean isEmailExpected ->
+        throw new NotImplementedException()
     }),
-    MINLENGTH("minlength","gralidation.error.minlength",{def parameterToControl, int minlength ->
-        return parameterToControl?.size()>=minlength
+    INLIST("inlist", "inlist", {def parameterToControl, List allowedValues ->
+        throw new NotImplementedException()
     }),
-    BLANK("blank", "gralidation.error.blank", {def parameterToControl, boolean isBlankable ->
-        return isBlankable || (!isBlankable && parameterToControl!="")
+    MATCHES("matches", "matches", {def parameterToControl, String regexp->
+        throw new NotImplementedException()
+    }),
+    MAX("max", "max", {def parameterToControl, def max ->
+        throw new NotImplementedException()
+    }),
+    MAXSIZE("maxlength","maxsize",{def parameterToControl, int maxsize ->
+        parameterToControl?.size()<=maxsize
+    }),
+    MIN("min", "min", {def parameterToControl, def min ->
+        throw new NotImplementedException()
+    }),
+    MINSIZE("minlength","minsize",{def parameterToControl, int minsize ->
+        parameterToControl?.size()>=minsize
+    }),
+    NOTEQUAL("notequal", "notequal", {def parameterToControl, def value ->
+        parameterToControl!=value
+    }),
+    NULLABLE("nullable","nullable",{def parameterToControl, boolean isNullable ->
+        isNullable || (!isNullable && parameterToControl!=null)
+    }),
+    RANGE("range", "notequal", {def parameterToControl, def range ->
+        throw new NotImplementedException()
+    }),
+    URL("url", "url", {def parameterToControl, def urlExpected ->
+        throw new NotImplementedException()
     })
 
-    String value
-    String errorCode
-    Closure control
+    final String value
+    final String errorCode
+    final Closure control
 
     GralidationEnum(String value, String errorCode, Closure control){
         this.value = value
