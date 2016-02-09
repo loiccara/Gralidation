@@ -47,7 +47,7 @@ class GralidationEnumSpec extends Specification {
         !MAX.control.call(invalidTooManyArms.limbs, 4)
     }
 
-    def "maxlength is checked"(){
+    def "maxsize is checked"(){
         given:
         DummyObject foo1 = new DummyObject(name: "dummyName", aDummyList: [])
         DummyObject foo2 = new DummyObject(name: "dummyName", aDummyList: [1,2])
@@ -68,7 +68,7 @@ class GralidationEnumSpec extends Specification {
         !MIN.control.call(invalidNotEnoughNeurons.neurons, 1)
     }
 
-    def "minlength is checked"(){
+    def "minsize is checked"(){
         given:
         DummyObject foo1 = new DummyObject(name: "dummyName", aDummyList: [])
         DummyObject foo2 = new DummyObject(name: "dummyName", aDummyList: [1,2])
@@ -103,6 +103,60 @@ class GralidationEnumSpec extends Specification {
         NULLABLE.control.call(foo2.name, false)
     }
 
+    def "each is checked"(){
+        given:
+        DummyObject foo1 = new DummyObject(aDummyList: ["BATMAN", "SUPERMAN"])
+        DummyObject foo2 = new DummyObject(aDummyList: ["BATMAN", "SUPERMAN", "SUPERFRENCHMAN"])
+        DummyObject foo3 = new DummyObject(aDummyList: ["BATMAN", "SUPERMAN", "Super French Man", "LOIC THE SUPER HERO FLYING THROUGH THE SKY"])
+
+        Map nullConstraints = null
+        Map emptyConstraints = [:]
+        Map constraints = [maxsize:10]
+
+        when:
+        GralidationResult result0 = EACH.control.call(foo1.aDummyList, nullConstraints)
+        then:
+        result0.isValid
+
+        when:
+        GralidationResult result1 = EACH.control.call(foo1.aDummyList, emptyConstraints)
+        then:
+        result1.isValid
+
+        when:
+        GralidationResult result2 = EACH.control.call(foo1.aDummyList, constraints)
+        then:
+        result2.isValid
+
+        when:
+        GralidationResult result3 = EACH.control.call(foo2.aDummyList, emptyConstraints)
+        then:
+        result3.isValid
+
+        when:
+        GralidationResult result4 = EACH.control.call(foo2.aDummyList, constraints)
+        then:
+        !result4.isValid
+        result4.errors.size() == 1
+
+        when:
+        GralidationResult result5 = EACH.control.call(foo3.aDummyList, constraints)
+        then:
+        !result5.isValid
+        result5.errors.size() == 2
+    }
+
+    def "eachkey is checked"() {
+        given:
+        DummyObject foo1 = new DummyObject(dailyHours:[MONDAY:"from 08:00 to 18:00", TUESDAY:"from 08:00 to 19:00"])
+        DummyObject foo2 = new DummyObject(dailyHours:[MONDAY:"from 08:00 to 18:00", NOVEMBER:"from 08:00 to 19:00"])
+        List daysOfTheWeek = ["MONDAY", "TUESDAY", "WEDNESDAY"]
+
+        expect:
+        EACHKEY.control.call(foo1.dailyHours, [inlist:daysOfTheWeek]).isValid
+        !EACHKEY.control.call(foo2.dailyHours, [inlist:daysOfTheWeek]).isValid
+    }
+
     class DummyObject{
         String name
         List aDummyList
@@ -110,6 +164,7 @@ class GralidationEnumSpec extends Specification {
         long neurons
         int limbs
         String favouriteSuperHeroWithPowers
+        Map<String, String> dailyHours
     }
 
 

@@ -39,6 +39,12 @@ enum GralidationEnum {
     }),
     URL("url", "url", {def parameterToControl, def urlExpected ->
         throw new NotImplementedException()
+    }),
+    EACH("each", "each", {List parameterToControl, Map controls ->
+        Gralidator.controlList(parameterToControl, controls)
+    }),
+    EACHKEY("eachkey", "eachkey", {Map parameterToControl, Map controls ->
+        Gralidator.controlList(parameterToControl.keySet().toList(), controls)
     })
 
     final String value

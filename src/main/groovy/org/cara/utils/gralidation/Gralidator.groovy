@@ -40,9 +40,18 @@ class Gralidator {
         new GralidationResult(isValid:errors.isEmpty(), errors:errors)
     }
 
-    protected static GralidationResult executeControls(def propertyValue, Map controls){
+    protected static GralidationResult controlList(List myList, Map controls){
         List errors = []
-        controls.each { String constraint, def controlValue ->
+        myList.each {
+            GralidationResult thisGralidation = executeControls(it, controls)
+            errors.addAll(thisGralidation.errors)
+        }
+        new GralidationResult(isValid:errors.isEmpty(), errors:errors)
+    }
+
+    private static GralidationResult executeControls(def propertyValue, Map controls){
+        List errors = []
+        controls.each {String constraint, def controlValue ->
             GralidationEnum currentControl = constraint.toUpperCase() as GralidationEnum
             if (!currentControl.control.call(propertyValue, controlValue)) {
                 errors.add(ERROR_CODE_PREFIX + currentControl.errorCode)
