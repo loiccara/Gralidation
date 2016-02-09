@@ -12,10 +12,10 @@ class GralidationEnumSpec extends Specification {
         DummyObject foo2 = new DummyObject(name: "dummyName", aDummyList: [])
 
         expect:
-        BLANK.control.call(foo1.name, true)
-        !BLANK.control.call(foo1.name, false)
-        BLANK.control.call(foo2.name, true)
-        BLANK.control.call(foo2.name, false)
+        BLANK.control.call(foo1.name, true).isValid
+        !BLANK.control.call(foo1.name, false).isValid
+        BLANK.control.call(foo2.name, true).isValid
+        BLANK.control.call(foo2.name, false).isValid
     }
 
     def "inlist is checked"(){
@@ -29,10 +29,10 @@ class GralidationEnumSpec extends Specification {
         DummyObject withValidData2 = new DummyObject(limbs: 4)
 
         expect:
-        !INLIST.control.call(withInvalidData.favouriteSuperHeroWithPowers, superHeroWithPowers)
-        INLIST.control.call(withValidData.favouriteSuperHeroWithPowers, superHeroWithPowers)
-        !INLIST.control.call(withInvalidData2.limbs, validInt)
-        INLIST.control.call(withValidData2.limbs, validInt)
+        !INLIST.control.call(withInvalidData.favouriteSuperHeroWithPowers, superHeroWithPowers).isValid
+        INLIST.control.call(withValidData.favouriteSuperHeroWithPowers, superHeroWithPowers).isValid
+        !INLIST.control.call(withInvalidData2.limbs, validInt).isValid
+        INLIST.control.call(withValidData2.limbs, validInt).isValid
     }
 
     def "max is checked"() {
@@ -42,9 +42,9 @@ class GralidationEnumSpec extends Specification {
         DummyObject invalidTooManyArms = new DummyObject(name: "dummyName", aDummyList: [], limbs: 5)
 
         expect:
-        MAX.control.call(validOneMissingArm.limbs, 4)
-        MAX.control.call(validObject.limbs, 4)
-        !MAX.control.call(invalidTooManyArms.limbs, 4)
+        MAX.control.call(validOneMissingArm.limbs, 4).isValid
+        MAX.control.call(validObject.limbs, 4).isValid
+        !MAX.control.call(invalidTooManyArms.limbs, 4).isValid
     }
 
     def "maxsize is checked"(){
@@ -53,9 +53,9 @@ class GralidationEnumSpec extends Specification {
         DummyObject foo2 = new DummyObject(name: "dummyName", aDummyList: [1,2])
 
         expect:
-        MAXSIZE.control.call(foo1.aDummyList, 1)
-        MAXSIZE.control.call(foo2.aDummyList, 2)
-        !MAXSIZE.control.call(foo2.aDummyList, 1)
+        MAXSIZE.control.call(foo1.aDummyList, 1).isValid
+        MAXSIZE.control.call(foo2.aDummyList, 2).isValid
+        !MAXSIZE.control.call(foo2.aDummyList, 1).isValid
     }
 
     def "min is checked"() {
@@ -64,8 +64,8 @@ class GralidationEnumSpec extends Specification {
         DummyObject invalidNotEnoughNeurons = new DummyObject(name: "dummyName", aDummyList: [], neurons: 0)
 
         expect:
-        MIN.control.call(validEnoughNeurons.neurons, 1)
-        !MIN.control.call(invalidNotEnoughNeurons.neurons, 1)
+        MIN.control.call(validEnoughNeurons.neurons, 1).isValid
+        !MIN.control.call(invalidNotEnoughNeurons.neurons, 1).isValid
     }
 
     def "minsize is checked"(){
@@ -74,9 +74,9 @@ class GralidationEnumSpec extends Specification {
         DummyObject foo2 = new DummyObject(name: "dummyName", aDummyList: [1,2])
 
         expect:
-        !MINSIZE.control.call(foo1.aDummyList, 1)
-        MINSIZE.control.call(foo2.aDummyList, 2)
-        !MINSIZE.control.call(foo2.aDummyList, 3)
+        !MINSIZE.control.call(foo1.aDummyList, 1).isValid
+        MINSIZE.control.call(foo2.aDummyList, 2).isValid
+        !MINSIZE.control.call(foo2.aDummyList, 3).isValid
     }
 
     def "notequal is checked"(){
@@ -86,9 +86,9 @@ class GralidationEnumSpec extends Specification {
         DummyObject foo3 = new DummyObject(name: "superman")
 
         expect:
-        !NOTEQUAL.control.call(foo1.name, "BATMAN")
-        NOTEQUAL.control.call(foo2.name, "BATMAN")
-        NOTEQUAL.control.call(foo3.name, "BATMAN")
+        !NOTEQUAL.control.call(foo1.name, "BATMAN").isValid
+        NOTEQUAL.control.call(foo2.name, "BATMAN").isValid
+        NOTEQUAL.control.call(foo3.name, "BATMAN").isValid
     }
 
     def "nullable is checked"(){
@@ -97,10 +97,10 @@ class GralidationEnumSpec extends Specification {
         DummyObject foo2 = new DummyObject(name: "dummyName", aDummyList: null)
 
         expect:
-        NULLABLE.control.call(foo1.name, true)
-        !NULLABLE.control.call(foo1.name, false)
-        NULLABLE.control.call(foo2.name, true)
-        NULLABLE.control.call(foo2.name, false)
+        NULLABLE.control.call(foo1.name, true).isValid
+        !NULLABLE.control.call(foo1.name, false).isValid
+        NULLABLE.control.call(foo2.name, true).isValid
+        NULLABLE.control.call(foo2.name, false).isValid
     }
 
     def "each is checked"(){

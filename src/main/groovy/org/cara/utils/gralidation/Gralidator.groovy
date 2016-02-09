@@ -53,8 +53,9 @@ class Gralidator {
         List errors = []
         controls.each {String constraint, def controlValue ->
             GralidationEnum currentControl = constraint.toUpperCase() as GralidationEnum
-            if (!currentControl.control.call(propertyValue, controlValue)) {
-                errors.add(ERROR_CODE_PREFIX + currentControl.errorCode)
+            GralidationResult thisResult = currentControl.control.call(propertyValue, controlValue)
+            if (!thisResult.isValid) {
+                errors.addAll(thisResult.errors)
             }
         }
         new GralidationResult(isValid:errors.isEmpty(), errors:errors)
