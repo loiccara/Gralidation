@@ -11,19 +11,19 @@ enum GralidationEnum {
         throw new NotImplementedException()
     }),
     INLIST("inlist", "inlist", {def parameterToControl, List allowedValues ->
-        throw new NotImplementedException()
+        parameterToControl in allowedValues
     }),
     MATCHES("matches", "matches", {def parameterToControl, String regexp->
         throw new NotImplementedException()
     }),
     MAX("max", "max", {def parameterToControl, def max ->
-        throw new NotImplementedException()
+        parameterToControl <= max
     }),
     MAXSIZE("maxlength","maxsize",{def parameterToControl, int maxsize ->
         parameterToControl?.size()<=maxsize
     }),
     MIN("min", "min", {def parameterToControl, def min ->
-        throw new NotImplementedException()
+        parameterToControl > min
     }),
     MINSIZE("minlength","minsize",{def parameterToControl, int minsize ->
         parameterToControl?.size()>=minsize
