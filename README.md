@@ -53,19 +53,16 @@ COMING SOON
 ### Configuration ###
 There are dependencies on Groovy 2.4 and Spock. 
 
-To ensure that your validation is read properly, you need to have in your objects the following properties:
-
-1. Map constraints
-constrains is a map of properties and controls. As an example:
+To ensure that your validation is read properly, you need to create a map of constraints. This map needs to be in your Object class in case of an object validation. E.g.:
 
 Map constraints = [
   name:[nullable:true, blank:false],
   age:[nullable:false]
 ]
 
-2. List errors
-errors can be set at [] during the object creation. This list of errors will be set at [] at each execution.
-
+The result is a new object, containing:
+- a boolean isValid, true if the validation is correct
+- a list of errors, containing all the validation errors in case of a failure during the validation.
 
 ### Contribution guidelines ### COMING SOON
 
