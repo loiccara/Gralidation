@@ -6,6 +6,18 @@ import static org.cara.utils.gralidation.GralidationEnum.*
 
 class GralidationEnumSpec extends Specification {
 
+    def "blank is checked"(){
+        given:
+        DummyObject foo1 = new DummyObject(name: "", aDummyList: [])
+        DummyObject foo2 = new DummyObject(name: "dummyName", aDummyList: [])
+
+        expect:
+        BLANK.control.call(foo1.name, true)
+        !BLANK.control.call(foo1.name, false)
+        BLANK.control.call(foo2.name, true)
+        BLANK.control.call(foo2.name, false)
+    }
+
     def "inlist is checked"(){
         given:
         List superHeroWithPowers = ["SUPERMAN", "AQUAMAN", "RAYMAN", "CYCLOP"]
@@ -21,18 +33,6 @@ class GralidationEnumSpec extends Specification {
         INLIST.control.call(withValidData.favouriteSuperHeroWithPowers, superHeroWithPowers)
         !INLIST.control.call(withInvalidData2.limbs, validInt)
         INLIST.control.call(withValidData2.limbs, validInt)
-    }
-
-    def "nullable is checked"() {
-        given:
-        DummyObject foo1 = new DummyObject(name: null, aDummyList: null)
-        DummyObject foo2 = new DummyObject(name: "dummyName", aDummyList: null)
-
-        expect:
-        NULLABLE.control.call(foo1.name, true)
-        !NULLABLE.control.call(foo1.name, false)
-        NULLABLE.control.call(foo2.name, true)
-        NULLABLE.control.call(foo2.name, false)
     }
 
     def "max is checked"() {
@@ -79,16 +79,28 @@ class GralidationEnumSpec extends Specification {
         !MINSIZE.control.call(foo2.aDummyList, 3)
     }
 
-    def "blank is checked"(){
+    def "notequal is checked"(){
         given:
-        DummyObject foo1 = new DummyObject(name: "", aDummyList: [])
-        DummyObject foo2 = new DummyObject(name: "dummyName", aDummyList: [])
+        DummyObject foo1 = new DummyObject(name: "BATMAN")
+        DummyObject foo2 = new DummyObject(name: "batman")
+        DummyObject foo3 = new DummyObject(name: "superman")
 
         expect:
-        BLANK.control.call(foo1.name, true)
-        !BLANK.control.call(foo1.name, false)
-        BLANK.control.call(foo2.name, true)
-        BLANK.control.call(foo2.name, false)
+        !NOTEQUAL.control.call(foo1.name, "BATMAN")
+        NOTEQUAL.control.call(foo2.name, "BATMAN")
+        NOTEQUAL.control.call(foo3.name, "BATMAN")
+    }
+
+    def "nullable is checked"(){
+        given:
+        DummyObject foo1 = new DummyObject(name: null, aDummyList: null)
+        DummyObject foo2 = new DummyObject(name: "dummyName", aDummyList: null)
+
+        expect:
+        NULLABLE.control.call(foo1.name, true)
+        !NULLABLE.control.call(foo1.name, false)
+        NULLABLE.control.call(foo2.name, true)
+        NULLABLE.control.call(foo2.name, false)
     }
 
     class DummyObject{
