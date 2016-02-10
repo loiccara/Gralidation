@@ -1,5 +1,7 @@
 package org.cara.utils.gralidation
 
+import org.apache.commons.lang3.ClassUtils
+
 class Gralidator {
 
     static final String ERROR_CODE_PREFIX = "gralidation.error."
@@ -22,6 +24,12 @@ class Gralidator {
             def propertyValue = object.getProperties().get(propertyName)
             GralidationResult tempResult = executeControls(propertyValue, controls)
             errors.addAll(tempResult.errors)
+
+            if (propertyValue && isEmbeddedComplexObject(object, propertyName)){
+                // gralidate the embedded object
+                GralidationResult embeddedResult = gralidate(propertyValue)
+                errors.addAll(embeddedResult.errors)
+            }
         }
         new GralidationResult(isValid:errors.isEmpty(), errors:errors)
     }
@@ -60,4 +68,17 @@ class Gralidator {
         }
         new GralidationResult(isValid:errors.isEmpty(), errors:errors)
     }
+
+    private static boolean isEmbeddedComplexObject(Object object, String propertyName){
+        Class propertyClass = object.properties.get(propertyName).class
+        !ClassUtils.isPrimitiveOrWrapper(propertyClass) && !(propertyClass in NON_EMBEDDED_OBJECTS)
+    }
+
+    private static final Set<Class> NON_EMBEDDED_OBJECTS = [
+            List.class,
+            Set.class,
+            Map.class,
+            String.class,
+            ArrayList.class
+    ]
 }

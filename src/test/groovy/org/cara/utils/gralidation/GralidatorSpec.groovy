@@ -28,6 +28,16 @@ class GralidatorSpec extends Specification {
         ]
     }
 
+    class DummyObjectWithEmbeddedObject{
+        String name
+        DummyObjectWithConstraints myEmbeddedObject
+
+        static def constraints = [
+                name:[nullable:false],
+                myEmbeddedObject:[nullable:true]
+        ]
+    }
+
     def "a gralidation without constraints throws an exception"(){
         given:
         DummyObjectWithoutConstraints foo1 = new DummyObjectWithoutConstraints()
@@ -145,6 +155,25 @@ class GralidatorSpec extends Specification {
         invalidGralidationResult.errors.size() == 1
     }
 
-    /************************* LISTS VALIDATION **************************/
+    /************************* EMBEDDED OBJECTS VALIDATION **************************/
+    def "should validate enbedded objects"(){
+        given:
+        DummyObjectWithConstraints validEmbeddedObject = new DummyObjectWithConstraints(name:"Embedded Man",dummyList: [1,2,3])
+        DummyObjectWithConstraints invalidEmbeddedObject = new DummyObjectWithConstraints(name:"")
+        DummyObjectWithEmbeddedObject withValidEmbeddedObject = new DummyObjectWithEmbeddedObject(name:"valid object", myEmbeddedObject:  validEmbeddedObject)
+        DummyObjectWithEmbeddedObject withInvalidEmbeddedObject = new DummyObjectWithEmbeddedObject(name:"invalid object", myEmbeddedObject: invalidEmbeddedObject)
 
+        when:
+        GralidationResult gralidationResult1 = Gralidator.gralidate(withValidEmbeddedObject)
+
+        then:
+        gralidationResult1.isValid
+
+        when:
+        GralidationResult gralidationResult2 = Gralidator.gralidate(withInvalidEmbeddedObject)
+
+        then:
+        !gralidationResult2.isValid
+
+    }
 }
