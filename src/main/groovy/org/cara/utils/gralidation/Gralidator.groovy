@@ -25,7 +25,7 @@ class Gralidator {
             GralidationResult tempResult = executeControls(propertyValue, controls)
             errors.addAll(tempResult.errors)
 
-            if (propertyValue && isEmbeddedComplexObject(object, propertyName)){
+            if (propertyValue && isEmbeddedComplexObject(object, propertyName, propertyValue)){
                 // gralidate the embedded object
                 GralidationResult embeddedResult = gralidate(propertyValue)
                 errors.addAll(embeddedResult.errors)
@@ -69,16 +69,15 @@ class Gralidator {
         new GralidationResult(isValid:errors.isEmpty(), errors:errors)
     }
 
-    private static boolean isEmbeddedComplexObject(Object object, String propertyName){
+    private static boolean isEmbeddedComplexObject(Object object, String propertyName, def propertyValue){
+
         Class propertyClass = object.properties.get(propertyName).class
-        !ClassUtils.isPrimitiveOrWrapper(propertyClass) && !(propertyClass in NON_EMBEDDED_OBJECTS)
+        propertyClass && !ClassUtils.isPrimitiveOrWrapper(propertyClass) && !isArrayStringOrCollection(propertyValue) && !propertyClass.isEnum()
     }
 
-    private static final Set<Class> NON_EMBEDDED_OBJECTS = [
-            List.class,
-            Set.class,
-            Map.class,
-            String.class,
-            ArrayList.class
-    ]
+    private static final boolean isArrayStringOrCollection(Object object){
+        boolean isArrayOrCOllection = [Collection, Object[]].any { it.isAssignableFrom(object.getClass()) }
+        boolean isString = object instanceof String
+        isArrayOrCOllection || isString
+    }
 }

@@ -166,6 +166,4 @@ class GralidationEnumSpec extends Specification {
         String favouriteSuperHeroWithPowers
         Map<String, String> dailyHours
     }
-
-
 }

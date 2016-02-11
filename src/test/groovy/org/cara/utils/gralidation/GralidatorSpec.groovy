@@ -156,7 +156,7 @@ class GralidatorSpec extends Specification {
     }
 
     /************************* EMBEDDED OBJECTS VALIDATION **************************/
-    def "should validate enbedded objects"(){
+    def "should validate embedded objects"(){
         given:
         DummyObjectWithConstraints validEmbeddedObject = new DummyObjectWithConstraints(name:"Embedded Man",dummyList: [1,2,3])
         DummyObjectWithConstraints invalidEmbeddedObject = new DummyObjectWithConstraints(name:"")
@@ -174,6 +174,5 @@ class GralidatorSpec extends Specification {
 
         then:
         !gralidationResult2.isValid
-
     }
 }
