@@ -22,7 +22,7 @@ class Gralidator {
 
         objectConstraints.each { String propertyName, Map controls ->
             def propertyValue = object.getProperties().get(propertyName)
-            GralidationResult tempResult = executeControls(propertyValue, controls)
+            GralidationResult tempResult = executeControls(propertyName, propertyValue, controls)
             errors.addAll(tempResult.errors)
 
             if (propertyValue && isEmbeddedComplexObject(object, propertyName, propertyValue)){
@@ -39,7 +39,7 @@ class Gralidator {
         constraints.each { String propertyName, Map controls ->
             if (myMap?.containsKey(propertyName)){
                 def propertyValue = myMap.get(propertyName)
-                GralidationResult tempResult = executeControls(propertyValue, controls)
+                GralidationResult tempResult = executeControls(propertyName, propertyValue, controls)
                 errors.addAll(tempResult.errors)
             } else if(validateInexistantKeys) {
                 errors.add(ERROR_CODE_PREFIX + "inexistantProperty:" + propertyName)
@@ -48,20 +48,20 @@ class Gralidator {
         new GralidationResult(isValid:errors.isEmpty(), errors:errors)
     }
 
-    protected static GralidationResult controlList(List myList, Map controls){
+    protected static GralidationResult controlList(String propertyName, List myList, Map controls){
         List errors = []
         myList.each {
-            GralidationResult thisGralidation = executeControls(it, controls)
+            GralidationResult thisGralidation = executeControls(propertyName, it, controls)
             errors.addAll(thisGralidation.errors)
         }
         new GralidationResult(isValid:errors.isEmpty(), errors:errors)
     }
 
-    private static GralidationResult executeControls(def propertyValue, Map controls){
+    private static GralidationResult executeControls(String propertyName, def propertyValue, Map controls){
         List errors = []
         controls.each {String constraint, def controlValue ->
             GralidationEnum currentControl = constraint.toUpperCase() as GralidationEnum
-            GralidationResult thisResult = currentControl.control.call(propertyValue, controlValue)
+            GralidationResult thisResult = currentControl.control.call(propertyName, propertyValue, controlValue)
             if (!thisResult.isValid) {
                 errors.addAll(thisResult.errors)
             }
@@ -77,7 +77,7 @@ class Gralidator {
 
     private static final boolean isArrayStringOrCollection(Object object){
         boolean isArrayOrCOllection = [Collection, Object[]].any { it.isAssignableFrom(object.getClass()) }
-        boolean isString = object instanceof String
-        isArrayOrCOllection || isString
+        boolean isCharSequence = object instanceof CharSequence
+        isArrayOrCOllection || isCharSequence
     }
 }

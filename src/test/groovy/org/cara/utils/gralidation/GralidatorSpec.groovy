@@ -23,8 +23,8 @@ class GralidatorSpec extends Specification {
         List dummyList
 
         static def constraints = [
-            name:[nullable:false],
-            dummyList:[maxsize:5, minsize:3]
+                name:[nullable:false],
+                dummyList:[maxsize:5, minsize:3]
         ]
     }
 
