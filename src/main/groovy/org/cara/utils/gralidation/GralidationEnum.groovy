@@ -2,6 +2,8 @@ package org.cara.utils.gralidation
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException
 
+import java.util.regex.Pattern
+
 import static org.cara.utils.gralidation.Gralidator.ERROR_CODE_PREFIX
 
 enum GralidationEnum {
@@ -17,8 +19,9 @@ enum GralidationEnum {
         boolean result = parameterToControl in allowedValues
         new ControlResult(isValid:result, errorData:result?[:]:getError("inlist", propertyName, parameterToControl, allowedValues))
     }),
-    MATCHES("matches", false, {def propertyName, def parameterToControl, String regexp->
-        throw new NotImplementedException()
+    MATCHES("matches", false, { def propertyName, def parameterToControl, Pattern pattern->
+        boolean result = (parameterToControl ==~ pattern)
+        new ControlResult(isValid:result, errorData:result?[:]:getError("matches", propertyName, parameterToControl, pattern))
     }),
     MAX("max", false, {def propertyName, def parameterToControl, def max ->
         boolean result = parameterToControl <= max

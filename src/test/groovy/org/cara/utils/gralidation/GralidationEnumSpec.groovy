@@ -2,6 +2,8 @@ package org.cara.utils.gralidation
 
 import spock.lang.Specification
 
+import java.util.regex.Pattern
+
 import static org.cara.utils.gralidation.GralidationEnum.*
 import static org.cara.utils.gralidation.Gralidator.getERROR_CODE_PREFIX
 
@@ -40,6 +42,15 @@ class GralidationEnumSpec extends Specification {
         INLIST.control.call("favouriteSuperHeroWithPowers", withValidData.favouriteSuperHeroWithPowers, superHeroWithPowers).isValid
         !INLIST.control.call("favouriteSuperHeroWithPowers", withInvalidData2.limbs, validInt).isValid
         INLIST.control.call("favouriteSuperHeroWithPowers", withValidData2.limbs, validInt).isValid
+    }
+
+    def "matches is checked"(){
+        given:
+        Pattern pattern1 =  ~/.{4}/
+
+        expect:
+        !MATCHES.control.call("name", "", pattern1).isValid
+        MATCHES.control.call("name", "test", pattern1).isValid
     }
 
     def "max is checked"() {
