@@ -61,9 +61,13 @@ class Gralidator {
         List errors = []
         controls.each {String constraint, def controlValue ->
             GralidationEnum currentControl = constraint.toUpperCase() as GralidationEnum
-            GralidationResult thisResult = currentControl.control.call(propertyName, propertyValue, controlValue)
+            def thisResult = currentControl.control.call(propertyName, propertyValue, controlValue)
             if (!thisResult.isValid) {
-                errors.addAll(thisResult.errors)
+                if (currentControl.isMultipleControl){
+                    errors.add(thisResult.errors)
+                } else {
+                    errors.add(thisResult.errorData)
+                }
             }
         }
         new GralidationResult(isValid:errors.isEmpty(), errors:errors)

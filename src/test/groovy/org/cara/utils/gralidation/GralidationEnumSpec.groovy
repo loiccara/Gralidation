@@ -164,17 +164,34 @@ class GralidationEnumSpec extends Specification {
         !EACHKEY.control.call("dailyHours", foo2.dailyHours, [inlist:daysOfTheWeek]).isValid
     }
 
-    def "error message has the right format"(){
+    def "error message has the right format for a simple control"(){
         given:
         DummyObject foo = new DummyObject(name: null)
 
         when:
-        GralidationResult gralidationResult = NULLABLE.control.call("name", foo.name, false)
+        ControlResult controlResult = NULLABLE.control.call("name", foo.name, false)
 
         then:
-        !gralidationResult.isValid
-        gralidationResult.errors == ["[propertyName:name,value:null,errorCode:${ERROR_CODE_PREFIX + "nullable"},control:false]"]
-        gralidationResult.errors[0] == "[propertyName:name,value:null,errorCode:${ERROR_CODE_PREFIX + "nullable"},control:false]"
+        !controlResult.isValid
+        println controlResult.errorData
+        controlResult.errorData == [propertyName:"name", errorCode:"gralidation.error.nullable", value:null, expected:false]
+    }
+
+    def "error message has the right format for a multiple control"(){
+        given:
+        DummyObject foo = new DummyObject(aDummyList: ["BATMAN", "SUPERMAN", "Super French Man", "LOIC THE SUPER HERO FLYING THROUGH THE SKY"])
+
+        Map constraints = [maxsize:10]
+
+        when:
+        GralidationResult result = EACH.control.call("aDummyList", foo.aDummyList, constraints)
+
+        then:
+        !result.isValid
+        result.errors.size() == 2
+        println result.errors
+        result.errors[0] == [propertyName:"aDummyList", errorCode:"gralidation.error.maxsize", value:"Super French Man", expected:10]
+        result.errors[1] == [propertyName:"aDummyList", errorCode:"gralidation.error.maxsize", value:"LOIC THE SUPER HERO FLYING THROUGH THE SKY", expected:10]
     }
 
     class DummyObject{
