@@ -2,6 +2,8 @@ package org.cara.utils.gralidation
 
 import spock.lang.Specification
 
+import static org.cara.utils.gralidation.TypeCheck.INTEGER
+
 class GralidatorSpec extends Specification {
 
 
@@ -136,10 +138,10 @@ class GralidatorSpec extends Specification {
 
     def "should gralidate successfully a Map when both collections are correct"(){
         given:
-        Map validDataMap = ["superman":"I can fly and destroy BATMAN", "batman":"DO YOU BLEED?", "aquaman":null]
-        Map invalidDataMap = ["superman":"I can fly and destroy BATMAN", "batman":null, "aquaman":"HEY! I exist and I'm cool!"]
+        Map validDataMap = ["superman":"I can fly and destroy BATMAN", "batman":"DO YOU BLEED?", "aquaman":null, "typeTest":"5"]
+        Map invalidDataMap = ["superman":"I can fly and destroy BATMAN", "batman":null, "aquaman":"HEY! I exist and I'm cool!", "typeTest":"fails!"]
 
-        Map constraints = [batman:[nullable:false], aquaman:[nullable:true]]
+        Map constraints = [batman:[nullable:false], aquaman:[nullable:true], typeTest:[type:INTEGER]]
 
         when:
         GralidationResult validGralidationResult = Gralidator.gralidate(validDataMap, constraints, true)
@@ -152,7 +154,9 @@ class GralidatorSpec extends Specification {
 
         then:
         !invalidGralidationResult.isValid
-        invalidGralidationResult.errors.size() == 1
+        invalidGralidationResult.errors.size() == 2
+        invalidGralidationResult.errors[1].errorCode == "gralidation.error.type"
+        invalidGralidationResult.errors[1].expected == INTEGER
     }
 
     /************************* EMBEDDED OBJECTS VALIDATION **************************/

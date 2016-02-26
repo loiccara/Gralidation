@@ -50,8 +50,9 @@ enum GralidationEnum {
     RANGE("range", false, {def propertyName, def parameterToControl, def range ->
         throw new NotImplementedException()
     }),
-    TYPE("type", false, {def propertyName, def parameterToControl, def className ->
-        parameterToControl
+    TYPE("type", false, {def propertyName, def parameterToControl, TypeCheck typeCheck ->
+        boolean result = typeCheck.check.call(parameterToControl)
+        new ControlResult(isValid:result, errorData:result?[:]:getError("type", propertyName, parameterToControl, typeCheck))
     }),
     URL("url", false, {def propertyName, def parameterToControl, def urlExpected ->
         throw new NotImplementedException()

@@ -6,6 +6,7 @@ import java.util.regex.Pattern
 
 import static org.cara.utils.gralidation.GralidationEnum.*
 import static org.cara.utils.gralidation.Gralidator.getERROR_CODE_PREFIX
+import static org.cara.utils.gralidation.TypeCheck.*
 
 class GralidationEnumSpec extends Specification {
 
@@ -121,6 +122,28 @@ class GralidationEnumSpec extends Specification {
         NULLABLE.control.call("name", foo2.name, false).isValid
     }
 
+    def "type is checked"(String value, TypeCheck typeCheck, boolean isValid){
+        expect:
+        TYPE.control.call("name", value, typeCheck).isValid == isValid
+
+        where:
+        value   |   typeCheck   |   isValid
+        "5"     |   BIGDECIMAL  |   true
+        "5"     |   BIGINTEGER  |   true
+        "5"     |   DOUBLE      |   true
+        "5"     |   FLOAT       |   true
+        "5"     |   INTEGER     |   true
+        "5"     |   LONG        |   true
+        "5"     |   NUMBER      |   true
+        "TEST"  |   BIGDECIMAL  |   false
+        "TEST"  |   BIGINTEGER  |   false
+        "TEST"  |   DOUBLE      |   false
+        "TEST"  |   FLOAT       |   false
+        "TEST"  |   INTEGER     |   false
+        "TEST"  |   LONG        |   false
+        "TEST"  |   NUMBER      |   false
+    }
+
     def "each is checked"(){
         given:
         DummyObject foo1 = new DummyObject(aDummyList: ["BATMAN", "SUPERMAN"])
@@ -184,7 +207,6 @@ class GralidationEnumSpec extends Specification {
 
         then:
         !controlResult.isValid
-        println controlResult.errorData
         controlResult.errorData == [propertyName:"name", errorCode:"gralidation.error.nullable", value:null, expected:false]
     }
 
@@ -200,7 +222,6 @@ class GralidationEnumSpec extends Specification {
         then:
         !result.isValid
         result.errors.size() == 2
-        println result.errors
         result.errors[0] == [propertyName:"aDummyList", errorCode:"gralidation.error.maxsize", value:"Super French Man", expected:10]
         result.errors[1] == [propertyName:"aDummyList", errorCode:"gralidation.error.maxsize", value:"LOIC THE SUPER HERO FLYING THROUGH THE SKY", expected:10]
     }
