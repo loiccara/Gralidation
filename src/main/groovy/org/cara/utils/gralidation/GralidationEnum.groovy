@@ -1,5 +1,6 @@
 package org.cara.utils.gralidation
 
+import org.apache.commons.validator.routines.EmailValidator
 import sun.reflect.generics.reflectiveObjects.NotImplementedException
 
 import java.util.regex.Pattern
@@ -13,7 +14,9 @@ enum GralidationEnum {
         new ControlResult(isValid:result, errorData:result?[:]:getError("blank", propertyName, parameterToControl, isBlankable))
     }),
     EMAIL("email", false, {def propertyName, def parameterToControl, boolean isEmailExpected ->
-        throw new NotImplementedException()
+        boolean isEmail = EmailValidator.getInstance(true).isValid(parameterToControl)
+        boolean result = (isEmailExpected && isEmail) || (!isEmailExpected && !isEmail)
+        new ControlResult(isValid:result, errorData:result?[:]:getError("email", propertyName, parameterToControl, isEmailExpected))
     }),
     INLIST("inlist", false, {def propertyName, def parameterToControl, List allowedValues ->
         boolean result = parameterToControl in allowedValues

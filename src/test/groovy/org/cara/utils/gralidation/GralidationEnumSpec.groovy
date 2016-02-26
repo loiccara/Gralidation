@@ -28,6 +28,18 @@ class GralidationEnumSpec extends Specification {
         BLANK.control.call("name", foo4.name, false).isValid
     }
 
+    def "email is checked"(String email, boolean isEmailExpected, boolean result){
+        expect:
+        EMAIL.control.call("email", email, isEmailExpected).isValid == result
+
+        where:
+        email                       |   isEmailExpected     |   result
+        "cara.loic.pro@gmail.com"   |   true                |   true
+        "cara.loic.pro@gmail.com"   |   false               |   false
+        "plopiplop"                 |   true                |   false
+        "plopiplop"                 |   false               |   true
+    }
+
     def "inlist is checked"(){
         given:
         List superHeroWithPowers = ["SUPERMAN", "AQUAMAN", "RAYMAN", "CYCLOP"]
