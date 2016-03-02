@@ -14,7 +14,7 @@ List powers
 String weakness
 
 Map constraints = [
-  name:[nullable:false, blank:false],
+  name:[nullable:false, blank:false]
 ]
 
 ```
