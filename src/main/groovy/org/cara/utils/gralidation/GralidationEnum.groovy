@@ -1,6 +1,7 @@
 package org.cara.utils.gralidation
 
 import org.apache.commons.validator.routines.EmailValidator
+import org.apache.commons.validator.routines.UrlValidator
 import sun.reflect.generics.reflectiveObjects.NotImplementedException
 
 import java.util.regex.Pattern
@@ -59,7 +60,9 @@ enum GralidationEnum {
         new ControlResult(isValid:result, errorData:result?[:]:getError("type", propertyName, parameterToControl, typeCheck))
     }),
     URL("url", false, {def propertyName, def parameterToControl, def urlExpected ->
-        throw new NotImplementedException()
+        boolean isUrl = UrlValidator.getInstance().isValid(parameterToControl)
+        boolean result = (urlExpected && isUrl) || (!urlExpected && !isUrl)
+        new ControlResult(isValid:result, errorData:result?[:]:getError("email", propertyName, parameterToControl, urlExpected))
     }),
     EACH("each", true, {def propertyName, List parameterToControl, Map controls ->
         Gralidator.controlList(propertyName, parameterToControl, controls)

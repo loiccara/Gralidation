@@ -171,6 +171,18 @@ class GralidationEnumSpec extends Specification {
         "TEST"  |   NUMBER      |   false
     }
 
+    def "URL is checked"(String url, boolean isUrlExpected, boolean isValid){
+        expect:
+        GralidationEnum.URL.control.call("name", url, isUrlExpected).isValid == isValid
+
+        where:
+        url                         |   isUrlExpected   |   isValid
+        "http://www.google.co.uk"   |   true            |   true
+        "http://www.google.co.uk"   |   false           |   false
+        "cara.loic.pro@.com"        |   true            |   false
+        "cara.loic.pro@.com"        |   false           |   true
+    }
+
     def "each is checked"(){
         given:
         DummyObject foo1 = new DummyObject(aDummyList: ["BATMAN", "SUPERMAN"])
