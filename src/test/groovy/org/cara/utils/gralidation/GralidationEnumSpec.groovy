@@ -134,6 +134,21 @@ class GralidationEnumSpec extends Specification {
         NULLABLE.control.call("name", foo2.name, false).isValid
     }
 
+    def "range is checked"(def value, def range, boolean isValid){
+        expect:
+        RANGE.control.call("name", value, range).isValid == isValid
+
+        where:
+        value   |   range       |   isValid
+        5       |   1..9        |   true
+        19      |   1..9        |   false
+        "b"     |   'a'..'e'    |   true
+        "z"     |   'a'..'e'    |   false
+
+
+
+    }
+
     def "type is checked"(String value, TypeCheck typeCheck, boolean isValid){
         expect:
         TYPE.control.call("name", value, typeCheck).isValid == isValid

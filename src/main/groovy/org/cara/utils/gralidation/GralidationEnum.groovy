@@ -51,7 +51,8 @@ enum GralidationEnum {
         new ControlResult(isValid:result, errorData:result?[:]:getError("nullable", propertyName, parameterToControl, isNullable))
     }),
     RANGE("range", false, {def propertyName, def parameterToControl, def range ->
-        throw new NotImplementedException()
+        boolean result = parameterToControl in range
+        new ControlResult(isValid: result, errorData: result?[:]:getError("range", propertyName, parameterToControl, range))
     }),
     TYPE("type", false, {def propertyName, def parameterToControl, TypeCheck typeCheck ->
         boolean result = typeCheck.check.call(parameterToControl)
