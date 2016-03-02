@@ -13,14 +13,17 @@ class Gralidator {
     }
 
     static GralidationResult gralidate(Object object){
-        List<String> errors = []
         Map objectConstraints = object.constraints
+        gralidate(object, objectConstraints)
+    }
 
-        if (objectConstraints == null){
+    static GralidationResult gralidate(Object object, Map constraints){
+        List<String> errors = []
+        if (constraints == null){
             throw new MissingPropertyException("No constraints specified for ${object.class}")
         }
 
-        objectConstraints.each { String propertyName, Map controls ->
+        constraints.each { String propertyName, Map controls ->
             def propertyValue = object.getProperties().get(propertyName)
             GralidationResult tempResult = executeControls(propertyName, propertyValue, controls)
             errors.addAll(tempResult.errors)
@@ -34,14 +37,14 @@ class Gralidator {
         new GralidationResult(isValid:errors.isEmpty(), errors:errors)
     }
 
-    static GralidationResult gralidate(Map myMap, Map constraints, boolean validateInexistantKeys){
+    static GralidationResult gralidate(Map myMap, Map constraints, boolean checkInexistantKeys){
         List<String> errors = []
         constraints.each { String propertyName, Map controls ->
             if (myMap?.containsKey(propertyName)){
                 def propertyValue = myMap.get(propertyName)
                 GralidationResult tempResult = executeControls(propertyName, propertyValue, controls)
                 errors.addAll(tempResult.errors)
-            } else if(validateInexistantKeys) {
+            } else if(checkInexistantKeys) {
                 errors.add(ERROR_CODE_PREFIX + "inexistantProperty:" + propertyName)
             }
         }

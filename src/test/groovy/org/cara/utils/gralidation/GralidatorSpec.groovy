@@ -7,7 +7,7 @@ import static org.cara.utils.gralidation.TypeCheck.INTEGER
 class GralidatorSpec extends Specification {
 
 
-    /************************* OBJECTS VALIDATION *************************/
+    /************************* OBJECTS VALIDATION WITH EMBEDDED CONSTRAINTS *************************/
     class DummyObjectWithoutConstraints{
         String name
         List dummyList
@@ -56,7 +56,7 @@ class GralidatorSpec extends Specification {
         DummyObjectWithEmptyConstraints foo1 = new DummyObjectWithEmptyConstraints()
 
         expect:
-        Gralidator.gralidate(foo1)
+        Gralidator.gralidate(foo1).isValid
     }
 
     def "a gralidation with constraints checks all the values for each property"(){
@@ -64,10 +64,32 @@ class GralidatorSpec extends Specification {
         DummyObjectWithConstraints foo1 = new DummyObjectWithConstraints(name:"test", dummyList: [1,2,3,4])
 
         expect:
-        Gralidator.gralidate(foo1)
+        Gralidator.gralidate(foo1).isValid
     }
 
-    def "Gralidator adds a new method to Object on init"(){
+    /************************* OBJECTS VALIDATION WITHOUT EMBEDDED CONSTRAINTS *************************/
+
+    def "a gralidation on a map with constraints checks all the values for each property"(){
+        given:
+        DummyObjectWithConstraints foo1 = new DummyObjectWithConstraints(name:"test", dummyList: [1,2,3,4])
+        Map constraints = [
+            name:[nullable:false],
+            dummyList:[maxsize:5, minsize:3]
+        ]
+
+        when:
+        GralidationResult result = Gralidator.gralidate(foo1, constraints)
+
+        then:
+        println result.errors
+        result.isValid
+        result.errors == []
+    }
+
+
+    /************************* ADD GRALIDATE METHOD TO ALL OBJECTS *************************/
+
+     def "Gralidator adds a new method to Object on init"(){
         given:""
         Object object1 = new Object()
 
