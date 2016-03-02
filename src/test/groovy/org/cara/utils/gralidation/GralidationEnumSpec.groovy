@@ -10,25 +10,23 @@ import static org.cara.utils.gralidation.TypeCheck.*
 
 class GralidationEnumSpec extends Specification {
 
-    def "blank is checked"(){
-        given:
-        DummyObject foo1 = new DummyObject(name: "", aDummyList: [])
-        DummyObject foo2 = new DummyObject(name: "dummyName", aDummyList: [])
-        DummyObject foo3 = new DummyObject(name: "      ", aDummyList: [])
-        DummyObject foo4 = new DummyObject(name: null, aDummyList: [])
-
+    def "BLANK is checked"(String name, boolean isBlankExpected, boolean isValid){
         expect:
-        BLANK.control.call("name", foo1.name, true).isValid
-        !BLANK.control.call("name", foo1.name, false).isValid
-        BLANK.control.call("name", foo2.name, true).isValid
-        BLANK.control.call("name", foo2.name, false).isValid
-        BLANK.control.call("name", foo3.name, true).isValid
-        !BLANK.control.call("name", foo3.name, false).isValid
-        BLANK.control.call("name", foo4.name, true).isValid
-        BLANK.control.call("name", foo4.name, false).isValid
+        BLANK.control.call("name", name, isBlankExpected).isValid == isValid
+
+        where:
+        name        |   isBlankExpected |   isValid
+        ""          |   true            |   true
+        ""          |   false           |   false
+        "dummyName" |   true            |   true
+        "dummyName" |   false           |   true
+        "      "    |   true            |   true
+        "      "    |   false           |   false
+        null        |   true            |   true
+        null        |   false           |   true
     }
 
-    def "email is checked"(String email, boolean isEmailExpected, boolean result){
+    def "EMAIL is checked"(String email, boolean isEmailExpected, boolean result){
         expect:
         EMAIL.control.call("email", email, isEmailExpected).isValid == result
 
@@ -40,24 +38,19 @@ class GralidationEnumSpec extends Specification {
         "plopiplop"                 |   false               |   true
     }
 
-    def "inlist is checked"(){
-        given:
-        List superHeroWithPowers = ["SUPERMAN", "AQUAMAN", "RAYMAN", "CYCLOP"]
-        DummyObject withInvalidData = new DummyObject(favouriteSuperHeroWithPowers:"BATMAN")
-        DummyObject withValidData = new DummyObject(favouriteSuperHeroWithPowers:"SUPERMAN")
-
-        List validInt = [1,2,3,4]
-        DummyObject withInvalidData2 = new DummyObject(limbs: 0)
-        DummyObject withValidData2 = new DummyObject(limbs: 4)
-
+    def "INLIST is checked"(def value, List inList, boolean isValid){
         expect:
-        !INLIST.control.call("favouriteSuperHeroWithPowers", withInvalidData.favouriteSuperHeroWithPowers, superHeroWithPowers).isValid
-        INLIST.control.call("favouriteSuperHeroWithPowers", withValidData.favouriteSuperHeroWithPowers, superHeroWithPowers).isValid
-        !INLIST.control.call("favouriteSuperHeroWithPowers", withInvalidData2.limbs, validInt).isValid
-        INLIST.control.call("favouriteSuperHeroWithPowers", withValidData2.limbs, validInt).isValid
+        INLIST.control.call("name", value, inList).isValid == isValid
+
+        where:
+        value       | inList    | isValid
+        "BATMAN"    | ["SUPERMAN", "AQUAMAN", "RAYMAN", "CYCLOP"]    | false
+        "SUPERMAN"  | ["SUPERMAN", "AQUAMAN", "RAYMAN", "CYCLOP"]    | true
+        0           | [1,2,3,4]                                      | false
+        4           | [1,2,3,4]                                      | true
     }
 
-    def "matches is checked"(){
+    def "MATCHES is checked"(){
         given:
         Pattern pattern1 =  ~/.{4}/
 
@@ -66,7 +59,7 @@ class GralidationEnumSpec extends Specification {
         MATCHES.control.call("name", "test", pattern1).isValid
     }
 
-    def "max is checked"() {
+    def "MAX is checked"() {
         given:
         DummyObject validOneMissingArm = new DummyObject(limbs: 3)
         DummyObject validObject = new DummyObject(limbs: 4)
@@ -78,7 +71,7 @@ class GralidationEnumSpec extends Specification {
         !MAX.control.call("limbs", invalidTooManyArms.limbs, 4).isValid
     }
 
-    def "maxsize is checked"(){
+    def "MAXSIZE is checked"(){
         given:
         DummyObject foo1 = new DummyObject(aDummyList: [])
         DummyObject foo2 = new DummyObject(aDummyList: [1,2])
@@ -89,7 +82,7 @@ class GralidationEnumSpec extends Specification {
         !MAXSIZE.control.call("aDummyList", foo2.aDummyList, 1).isValid
     }
 
-    def "min is checked"() {
+    def "MIN is checked"() {
         given:
         DummyObject validEnoughNeurons = new DummyObject(neurons: 2323846233)
         DummyObject invalidNotEnoughNeurons = new DummyObject(neurons: 0)
@@ -99,7 +92,7 @@ class GralidationEnumSpec extends Specification {
         !MIN.control.call("neurons", invalidNotEnoughNeurons.neurons, 1).isValid
     }
 
-    def "minsize is checked"(){
+    def "MINSIZE is checked"(){
         given:
         DummyObject foo1 = new DummyObject(aDummyList: [])
         DummyObject foo2 = new DummyObject(aDummyList: [1,2])
@@ -110,7 +103,7 @@ class GralidationEnumSpec extends Specification {
         !MINSIZE.control.call("aDummyList", foo2.aDummyList, 3).isValid
     }
 
-    def "notequal is checked"(){
+    def "NOTEQUAL is checked"(){
         given:
         DummyObject foo1 = new DummyObject(name: "BATMAN")
         DummyObject foo2 = new DummyObject(name: "batman")
@@ -122,7 +115,7 @@ class GralidationEnumSpec extends Specification {
         NOTEQUAL.control.call("name", foo3.name, "BATMAN").isValid
     }
 
-    def "nullable is checked"(){
+    def "NULLABLE is checked"(){
         given:
         DummyObject foo1 = new DummyObject(name: null)
         DummyObject foo2 = new DummyObject(name: "dummyName")
@@ -134,7 +127,7 @@ class GralidationEnumSpec extends Specification {
         NULLABLE.control.call("name", foo2.name, false).isValid
     }
 
-    def "range is checked"(def value, def range, boolean isValid){
+    def "RANGE is checked"(def value, def range, boolean isValid){
         expect:
         RANGE.control.call("name", value, range).isValid == isValid
 
@@ -149,7 +142,7 @@ class GralidationEnumSpec extends Specification {
 
     }
 
-    def "type is checked"(String value, TypeCheck typeCheck, boolean isValid){
+    def "TYPE is checked"(String value, TypeCheck typeCheck, boolean isValid){
         expect:
         TYPE.control.call("name", value, typeCheck).isValid == isValid
 
