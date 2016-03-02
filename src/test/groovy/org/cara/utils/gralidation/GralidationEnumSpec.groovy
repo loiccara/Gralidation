@@ -176,50 +176,23 @@ class GralidationEnumSpec extends Specification {
         "cara.loic.pro@.com"        |   false           |   true
     }
 
-    def "each is checked"(){
-        given:
-        DummyObject foo1 = new DummyObject(aDummyList: ["BATMAN", "SUPERMAN"])
-        DummyObject foo2 = new DummyObject(aDummyList: ["BATMAN", "SUPERMAN", "SUPERFRENCHMAN"])
-        DummyObject foo3 = new DummyObject(aDummyList: ["BATMAN", "SUPERMAN", "Super French Man", "LOIC THE SUPER HERO FLYING THROUGH THE SKY"])
+    def "EACH is checked"(List list, Map constraints, boolean isValid, int errorsSize){
+        expect:
+        EACH.control.call("aDummyList", list, constraints).isValid == isValid
+        EACH.control.call("aDummyList", list, constraints).errors.size() == errorsSize
 
-        Map nullConstraints = null
-        Map emptyConstraints = [:]
-        Map constraints = [maxsize:10]
-
-        when:
-        GralidationResult result0 = EACH.control.call("aDummyList", foo1.aDummyList, nullConstraints)
-        then:
-        result0.isValid
-
-        when:
-        GralidationResult result1 = EACH.control.call("aDummyList", foo1.aDummyList, emptyConstraints)
-        then:
-        result1.isValid
-
-        when:
-        GralidationResult result2 = EACH.control.call("aDummyList", foo1.aDummyList, constraints)
-        then:
-        result2.isValid
-
-        when:
-        GralidationResult result3 = EACH.control.call("aDummyList", foo2.aDummyList, emptyConstraints)
-        then:
-        result3.isValid
-
-        when:
-        GralidationResult result4 = EACH.control.call("aDummyList", foo2.aDummyList, constraints)
-        then:
-        !result4.isValid
-        result4.errors.size() == 1
-
-        when:
-        GralidationResult result5 = EACH.control.call("aDummyList", foo3.aDummyList, constraints)
-        then:
-        !result5.isValid
-        result5.errors.size() == 2
+        where:
+        list                                |   constraints     |   isValid     |   errorsSize
+        ["BATMAN", "SUPERMAN"]              |   null            |   true        |   0
+        ["BATMAN", "SUPERMAN"]              |   [:]             |   true        |   0
+        ["BATMAN", "SUPERMAN"]              |   [maxsize:10]    |   true        |   0
+        ["BATMAN", "String way too long"]   |   null            |   true        |   0
+        ["BATMAN", "String way too long"]   |   [:]             |   true        |   0
+        ["BATMAN", "String way too long"]   |   [maxsize:10]    |   false       |   1
+        ["01234567890", "01234567890"]      |   [maxsize:10]    |   false       |   2
     }
 
-    def "eachkey is checked"() {
+    def "EACHKEY is checked"() {
         given:
         DummyObject foo1 = new DummyObject(dailyHours:[MONDAY:"from 08:00 to 18:00", TUESDAY:"from 08:00 to 19:00"])
         DummyObject foo2 = new DummyObject(dailyHours:[MONDAY:"from 08:00 to 18:00", NOVEMBER:"from 08:00 to 19:00"])
