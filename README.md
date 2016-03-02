@@ -73,4 +73,4 @@ The result is a new object, containing:
 ### Who do I talk to? ###
 
 Loic Cara
-cara.loic@gmail.com
+cara.loic.pro@gmail.com
