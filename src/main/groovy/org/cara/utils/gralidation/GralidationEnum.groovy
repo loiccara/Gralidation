@@ -68,7 +68,7 @@ enum GralidationEnum {
         Gralidator.controlList(propertyName, parameterToControl, controls)
     }),
     EACHKEY("eachkey", true, {def propertyName, Map parameterToControl, Map controls ->
-        Gralidator.controlList(propertyName, parameterToControl.keySet().toList(), controls)
+        Gralidator.controlList(propertyName, parameterToControl?.keySet()?.toList(), controls)
     })
 
     final String value

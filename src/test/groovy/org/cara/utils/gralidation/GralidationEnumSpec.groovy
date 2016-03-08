@@ -194,13 +194,14 @@ class GralidationEnumSpec extends Specification {
 
     def "EACHKEY is checked"() {
         given:
-        DummyObject foo1 = new DummyObject(dailyHours:[MONDAY:"from 08:00 to 18:00", TUESDAY:"from 08:00 to 19:00"])
-        DummyObject foo2 = new DummyObject(dailyHours:[MONDAY:"from 08:00 to 18:00", NOVEMBER:"from 08:00 to 19:00"])
+        Map foo1 = [MONDAY:"from 08:00 to 18:00", TUESDAY:"from 08:00 to 19:00"]
+        Map foo2 = [MONDAY:"from 08:00 to 18:00", NOVEMBER:"from 08:00 to 19:00"]
         List daysOfTheWeek = ["MONDAY", "TUESDAY", "WEDNESDAY"]
 
         expect:
-        EACHKEY.control.call("dailyHours", foo1.dailyHours, [inlist:daysOfTheWeek]).isValid
-        !EACHKEY.control.call("dailyHours", foo2.dailyHours, [inlist:daysOfTheWeek]).isValid
+        EACHKEY.control.call("dailyHours", foo1, [inlist:daysOfTheWeek]).isValid
+        !EACHKEY.control.call("dailyHours", foo2, [inlist:daysOfTheWeek]).isValid
+        EACHKEY.control.call("dailyHours", null, [inlist:daysOfTheWeek]).isValid
     }
 
     def "error message has the right format for a simple control"(){

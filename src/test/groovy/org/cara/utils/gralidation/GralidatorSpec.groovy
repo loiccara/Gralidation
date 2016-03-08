@@ -33,6 +33,7 @@ class GralidatorSpec extends Specification {
     class DummyObjectWithEmbeddedObject{
         String name
         DummyObjectWithConstraints myEmbeddedObject
+        Map<String, DummyObjectWithoutConstraints> myMap
 
         static def constraints = [
                 name:[nullable:false],
@@ -199,6 +200,21 @@ class GralidatorSpec extends Specification {
         GralidationResult gralidationResult2 = Gralidator.gralidate(withInvalidEmbeddedObject)
 
         then:
+        !gralidationResult2.isValid
+    }
+
+    def "should validate an embedded map"(){
+        given:
+        DummyObjectWithEmbeddedObject withMap = new DummyObjectWithEmbeddedObject(name:"name", myMap: [:])
+        DummyObjectWithEmbeddedObject withMapNull = new DummyObjectWithEmbeddedObject(name:"name", myMap: null)
+        Map constraints = [name:[nullable:false], myMap: [nullable: false, eachkey:[maxsize: 5]]]
+
+        when:
+        GralidationResult gralidationResult1 = Gralidator.gralidate(withMap, constraints)
+        GralidationResult gralidationResult2 = Gralidator.gralidate(withMapNull, constraints)
+
+        then:
+        gralidationResult1.isValid
         !gralidationResult2.isValid
     }
 }
