@@ -1,12 +1,9 @@
-package org.cara.utils.gralidation
+package org.yamevetwo.gralidation
 
 import org.apache.commons.validator.routines.EmailValidator
 import org.apache.commons.validator.routines.UrlValidator
-import sun.reflect.generics.reflectiveObjects.NotImplementedException
 
 import java.util.regex.Pattern
-
-import static org.cara.utils.gralidation.Gralidator.ERROR_CODE_PREFIX
 
 enum GralidationEnum {
 

@@ -1,8 +1,8 @@
-package org.cara.utils.gralidation
+package org.yamevetwo.gralidation
 
 import spock.lang.Specification
 
-import static org.cara.utils.gralidation.TypeCheck.INTEGER
+import static TypeCheck.INTEGER
 
 class GralidatorSpec extends Specification {
 

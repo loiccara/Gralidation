@@ -1,12 +1,11 @@
-package org.cara.utils.gralidation
+package org.yamevetwo.gralidation
 
 import spock.lang.Specification
 
 import java.util.regex.Pattern
 
-import static org.cara.utils.gralidation.GralidationEnum.*
-import static org.cara.utils.gralidation.Gralidator.getERROR_CODE_PREFIX
-import static org.cara.utils.gralidation.TypeCheck.*
+import static GralidationEnum.*
+import static TypeCheck.*
 
 class GralidationEnumSpec extends Specification {
 

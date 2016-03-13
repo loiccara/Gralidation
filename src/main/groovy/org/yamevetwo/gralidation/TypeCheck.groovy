@@ -1,4 +1,4 @@
-package org.cara.utils.gralidation
+package org.yamevetwo.gralidation
 
 enum TypeCheck {
 
