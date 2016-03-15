@@ -6,17 +6,39 @@ class Gralidator {
 
     static final String ERROR_CODE_PREFIX = "gralidation.error."
 
+    /**
+     * Add the gralidate(Object object) to the Object class
+     *
+     * @return
+     */
     static def initGralidator() {
         Object.metaClass.gralidate = {
             return gralidate(delegate)
         }
     }
 
+    /**
+     * Validate an object wiith a map of static constraints existing in the object's Class.
+     * Example:
+     * class DummyClass {
+     *     String name
+     *     static constraints = [name:[nullable:true]]
+     * }
+     * @param object
+     * @return
+     */
     static GralidationResult gralidate(Object object) {
         Map objectConstraints = object.constraints
         gralidate(object, objectConstraints)
     }
 
+    /**
+     * Validate an object with a given map of constraints
+     *
+     * @param object
+     * @param constraints (example : [name:[nullable:true]])
+     * @return
+     */
     static GralidationResult gralidate(Object object, Map constraints) {
         List<String> errors = []
         if (constraints == null) {
@@ -37,6 +59,14 @@ class Gralidator {
         new GralidationResult(isValid: errors.isEmpty(), errors: errors)
     }
 
+    /**
+     * Validate a map of <key,value> with a given map of constraints
+     * 
+     * @param myMap
+     * @param constraints
+     * @param checkInexistantKeys
+     * @return
+     */
     static GralidationResult gralidate(Map myMap, Map constraints, boolean checkInexistantKeys) {
         List<String> errors = []
         constraints.each { String propertyName, Map controls ->
